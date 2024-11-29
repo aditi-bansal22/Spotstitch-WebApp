@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { updateFields } = require("./validateFields");
+const Reaction = require("./emojiReactions");  // Import the Reaction model
 
 const PostSchema = new mongoose.Schema({
   userId: {
@@ -24,8 +25,25 @@ const PostSchema = new mongoose.Schema({
     },
   ],
   likes: Number,
+  reactions: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Reaction",  // Reference to the Reaction model
+    },
+  ],  // Add the reactions field to store reactions for this post
 });
 
+// Method to get reactions for a specific post
+PostSchema.statics.getReactions = async function (postId) {
+  try {
+    const reactions = await Reaction.find({ postId: postId });
+    return reactions;
+  } catch (err) {
+    throw new Error("Error getting reactions for post");
+  }
+};
+
+// Method to get all posts
 PostSchema.statics.getAllPosts = async () => {
   try {
     const result = await Post.find();
@@ -35,15 +53,17 @@ PostSchema.statics.getAllPosts = async () => {
   }
 };
 
+// Method to get a single post by ID
 PostSchema.statics.getPost = async (id) => {
   try {
     const result = await Post.findById(id);
     return result;
   } catch (err) {
-    throw new Error("Error getting posts getPost");
+    throw new Error("Error getting post by ID");
   }
 };
 
+// Method to get posts by userId (username)
 PostSchema.statics.getPostUsername = async function (userId) {
     try {
         const result = await Post.find({ userId: userId });
@@ -53,30 +73,28 @@ PostSchema.statics.getPostUsername = async function (userId) {
     }
 };
 
+// Method to get posts by tags
 PostSchema.statics.getPosts = async (filters = "") => {
   try {
     const result = await Post.find({ tags: { $all: filters } });
     return result;
   } catch (err) {
-    throw new Error("Error getting posts getPosts");
+    throw new Error("Error getting posts with specific tags");
   }
 };
 
+// Method to create a post
 PostSchema.statics.createPost = async (postData) => {
-    try {
+  try {
+    const post = new Post(postData);
+    await post.save();
+    return post;
+  } catch (err) {
+    throw new Error("Error creating post");
+  }
+};
 
-        console.log("POSTDATA POST.JS: ", postData)
-        const post = new Post(postData)
-        // await post.validate();
-        // console.log("VALIDATING POST",post.validate())
-        await post.save()
-        console.log("Post created:", post)
-        return post;
-    } catch (err) {
-        throw new Error("Error getting posts createPost");
-    }
-}
-
+// Method to update the post's image
 PostSchema.methods.updateImage = async function (newImg) {
   try {
     this.image = newImg;
@@ -86,6 +104,7 @@ PostSchema.methods.updateImage = async function (newImg) {
   }
 };
 
+// Method to update the post
 PostSchema.methods.updatePost = async function (post) {
   try {
     updateFields(this, post);
@@ -95,6 +114,7 @@ PostSchema.methods.updatePost = async function (post) {
   }
 };
 
+// Method to add a comment to the post
 PostSchema.methods.addComment = async function (userId, comment) {
   try {
     const post = {
@@ -110,6 +130,7 @@ PostSchema.methods.addComment = async function (userId, comment) {
   }
 };
 
+// Method to delete the post
 PostSchema.methods.deletePost = async function () {
   try {
     await this.delete();
