@@ -390,3 +390,53 @@ hr.white {
   border: none;
   border-radius: 25px;
 }
+.row-icons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.icon-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon-count {
+  margin-left: 5px;
+  font-size: 14px;
+  color: #ff6464;
+}
+
+.comment-form {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+}
+
+.comment-input {
+  background-color: #f0f0f0;
+  border-radius: 20px;
+  padding: 5px 15px;
+}
+
+.comment-submit {
+  background-color: transparent;
+  border: none;
+}
+
+.emoji-dropdown {
+  position: absolute;
+  background: #fff;
+  padding: 5px;
+  border-radius: 5px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 5px;
+  .container {
+    display: flex; /* or display: grid; */
+    gap: 10px;
+}
+
+}
